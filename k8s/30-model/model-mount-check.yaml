@@ -5,6 +5,7 @@ metadata:
   namespace: atharva-ml
 spec:
   restartPolicy: Never
+  nodeName: llmops-kind-worker
   containers:
   - name: inspect
     image: debian:12-slim
