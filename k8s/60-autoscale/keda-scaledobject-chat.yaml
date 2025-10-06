@@ -1,0 +1,18 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: chat-api-qps
+  namespace: atharva-app
+spec:
+  scaleTargetRef:
+    name: atharva-chat-api
+  minReplicaCount: 1
+  maxReplicaCount: 8
+  cooldownPeriod: 60
+  triggers:
+    - type: prometheus
+      metadata:
+        serverAddress: http://kps-kube-prometheus-stack-prometheus.monitoring.svc:9090
+        metricName: vllm_queue_length
+        threshold: "5"
+        query: sum(vllm:num_requests_waiting)

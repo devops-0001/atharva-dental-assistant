@@ -1,0 +1,28 @@
+[
+  {
+    "code": "TX-SCALE-01",
+    "name": "Scaling & Polishing",
+    "category": "Preventive",
+    "indications": ["Tartar buildup", "Gingival bleeding"],
+    "contraindications": [],
+    "steps": ["Ultrasonic scaling", "Polishing", "Fluoride advice"],
+    "duration_minutes": 40,
+    "visits": 1,
+    "price_band_inr": [1200, 1800],
+    "aftercare": ["Warm saline rinses 24h", "Soft bristle brushing"],
+    "risks": ["Transient sensitivity"]
+  },
+  {
+    "code": "TX-RCT-01",
+    "name": "Root Canal Therapy",
+    "category": "Endodontics",
+    "indications": ["Deep caries", "Pulpitis", "Apical periodontitis"],
+    "contraindications": ["Poor crown-root ratio (relative)"],
+    "steps": ["Local anesthesia", "Canal cleaning", "Obturation", "Temporary filling"],
+    "duration_minutes": 90,
+    "visits": 2,
+    "price_band_inr": [6000, 9500],
+    "aftercare": ["Analgesics as advised", "Avoid hard chewing until crown"],
+    "risks": ["Post-op soreness", "Instrument separation (rare)"]
+  }
+]

@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: sm-atharva-vllm
+  namespace: monitoring
+  labels:
+    release: kps   # <-- REQUIRED if your Prometheus CR uses selector.matchLabels.release
+spec:
+  namespaceSelector:
+    matchNames:
+      - atharva-ml
+  selector:
+    matchLabels:
+      app: isvc.atharva-vllm-predictor              # <-- must match your Service’s label
+  endpoints:
+    - port: http1                    # <-- must match the Service port *name*
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s             # optional, good practice

@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: atharva-alerts
+  namespace: monitoring
+spec:
+  groups:
+  - name: atharva-chat
+    rules:
+    - alert: ChatApiHighErrorRate
+      expr: sum(rate(chat_errors_total[5m])) by (stage) / sum(rate(chat_requests_total[5m])) by () > 0.05
+      for: 5m
+      labels: { severity: warning }
+      annotations:
+        summary: "Chat API error rate > 5% (stage={{ $labels.stage }})"
+    - alert: ChatApiLatencyHighP95
+      expr: histogram_quantile(0.95, sum(rate(chat_end_to_end_latency_seconds_bucket[5m])) by (le)) > 3
+      for: 10m
+      labels: { severity: warning }
+      annotations:
+        summary: "Chat API p95 latency > 3s"

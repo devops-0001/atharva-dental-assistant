@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: sm-atharva-chat-api
+  namespace: monitoring
+  labels:
+    release: kps   # optional, add if your Prometheus selects by this
+spec:
+  namespaceSelector:
+    matchNames:
+      - atharva-app
+  selector:
+    matchLabels:
+      app: atharva-chat-api          # <-- must match your Service’s label
+  endpoints:
+    - port: http                     # <-- must match the Service port *name*
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s             # optional but recommended

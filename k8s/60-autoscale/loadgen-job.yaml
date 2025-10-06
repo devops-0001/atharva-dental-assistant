@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: loadgen-job-
+  namespace: atharva-app
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: hey
+        image: schoolofdevops/hey:latest
+        command: ["hey"]
+        args:
+          - "-z"
+          - "3m"                                 # duration
+          - "-q"
+          - "5"                                 # target QPS
+          - "-c"
+          - "5"                                # concurrency
+          - "-m"
+          - "POST"
+          - "-H"
+          - "Content-Type: application/json"
+          - "-d"
+          - '{"question":"Do you accept UPI Payments?","k":4,"max_tokens":160}'
+          - "http://atharva-chat-api.atharva-app.svc.cluster.local:8080/chat"

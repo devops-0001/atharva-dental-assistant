@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: atharva-chat-api
+  namespace: atharva-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: atharva-chat-api }
+  template:
+    metadata:
+      labels: { app: atharva-chat-api }
+    spec:
+      containers:
+      - name: api
+        image: python:3.11-slim
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
+        workingDir: /workspace
+        command: ["bash","-lc"]
+        args:
+          - |
+            pip install --no-cache-dir fastapi==0.112.2 uvicorn==0.30.6 httpx==0.27.2 prometheus-client>=0.20.0
+            uvicorn chat_api:app --host 0.0.0.0 --port 8080 --proxy-headers 
+        envFrom:
+        - configMapRef: { name: chat-api-config }
+        volumeMounts:
+        - name: host
+          mountPath: /workspace
+          subPath: atharva-dental-assistant/serving
+        ports: [{ containerPort: 8080 }]
+        readinessProbe:
+          httpGet: { path: /health, port: 8080 }
+          initialDelaySeconds: 5
+          periodSeconds: 10
+      volumes:
+      - name: host
+        hostPath: { path: /mnt/project, type: Directory }

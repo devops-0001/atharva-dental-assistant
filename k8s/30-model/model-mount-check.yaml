@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: model-mount-check
+  namespace: atharva-ml
+spec:
+  restartPolicy: Never
+  containers:
+  - name: inspect
+    image: debian:12-slim
+    command: ["bash","-lc","ls -lah /model/model && head -n 50 /model/model/config.json || true && sleep 5"]
+    volumeMounts:
+    - name: model
+      mountPath: /model
+      readOnly: true
+  volumes:
+  - name: model
+    image:
+      reference: initcron/smollm2-135m-merged:v2
+      pullPolicy: IfNotPresent

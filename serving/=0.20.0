@@ -1,0 +1,67 @@
+Collecting fastapi==0.112.2
+  Downloading fastapi-0.112.2-py3-none-any.whl.metadata (27 kB)
+Collecting uvicorn==0.30.6
+  Downloading uvicorn-0.30.6-py3-none-any.whl.metadata (6.6 kB)
+Collecting httpx==0.27.2
+  Downloading httpx-0.27.2-py3-none-any.whl.metadata (7.1 kB)
+Collecting prometheus-client
+  Downloading prometheus_client-0.23.1-py3-none-any.whl.metadata (1.9 kB)
+Collecting starlette<0.39.0,>=0.37.2 (from fastapi==0.112.2)
+  Downloading starlette-0.38.6-py3-none-any.whl.metadata (6.0 kB)
+Collecting pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4 (from fastapi==0.112.2)
+  Downloading pydantic-2.11.10-py3-none-any.whl.metadata (68 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 68.6/68.6 kB 15.2 MB/s eta 0:00:00
+Collecting typing-extensions>=4.8.0 (from fastapi==0.112.2)
+  Downloading typing_extensions-4.15.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting click>=7.0 (from uvicorn==0.30.6)
+  Downloading click-8.3.0-py3-none-any.whl.metadata (2.6 kB)
+Collecting h11>=0.8 (from uvicorn==0.30.6)
+  Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+Collecting anyio (from httpx==0.27.2)
+  Downloading anyio-4.11.0-py3-none-any.whl.metadata (4.1 kB)
+Collecting certifi (from httpx==0.27.2)
+  Downloading certifi-2025.10.5-py3-none-any.whl.metadata (2.5 kB)
+Collecting httpcore==1.* (from httpx==0.27.2)
+  Downloading httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)
+Collecting idna (from httpx==0.27.2)
+  Downloading idna-3.10-py3-none-any.whl.metadata (10 kB)
+Collecting sniffio (from httpx==0.27.2)
+  Downloading sniffio-1.3.1-py3-none-any.whl.metadata (3.9 kB)
+Collecting annotated-types>=0.6.0 (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.112.2)
+  Downloading annotated_types-0.7.0-py3-none-any.whl.metadata (15 kB)
+Collecting pydantic-core==2.33.2 (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.112.2)
+  Downloading pydantic_core-2.33.2-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl.metadata (6.8 kB)
+Collecting typing-inspection>=0.4.0 (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.112.2)
+  Downloading typing_inspection-0.4.2-py3-none-any.whl.metadata (2.6 kB)
+Downloading fastapi-0.112.2-py3-none-any.whl (93 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 93.5/93.5 kB 329.1 MB/s eta 0:00:00
+Downloading uvicorn-0.30.6-py3-none-any.whl (62 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 62.8/62.8 kB 338.0 MB/s eta 0:00:00
+Downloading httpx-0.27.2-py3-none-any.whl (76 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 76.4/76.4 kB 230.9 MB/s eta 0:00:00
+Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 78.8/78.8 kB 17.9 MB/s eta 0:00:00
+Downloading prometheus_client-0.23.1-py3-none-any.whl (61 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 61.1/61.1 kB 293.2 MB/s eta 0:00:00
+Downloading click-8.3.0-py3-none-any.whl (107 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 107.3/107.3 kB 95.9 MB/s eta 0:00:00
+Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+Downloading pydantic-2.11.10-py3-none-any.whl (444 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 444.8/444.8 kB 27.3 MB/s eta 0:00:00
+Downloading pydantic_core-2.33.2-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (1.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.9/1.9 MB 34.6 MB/s eta 0:00:00
+Downloading starlette-0.38.6-py3-none-any.whl (71 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 71.5/71.5 kB 339.1 MB/s eta 0:00:00
+Downloading anyio-4.11.0-py3-none-any.whl (109 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 109.1/109.1 kB 387.2 MB/s eta 0:00:00
+Downloading idna-3.10-py3-none-any.whl (70 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 70.4/70.4 kB 452.1 MB/s eta 0:00:00
+Downloading sniffio-1.3.1-py3-none-any.whl (10 kB)
+Downloading typing_extensions-4.15.0-py3-none-any.whl (44 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 44.6/44.6 kB 289.7 MB/s eta 0:00:00
+Downloading certifi-2025.10.5-py3-none-any.whl (163 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 163.3/163.3 kB 273.2 MB/s eta 0:00:00
+Downloading annotated_types-0.7.0-py3-none-any.whl (13 kB)
+Downloading typing_inspection-0.4.2-py3-none-any.whl (14 kB)
+Installing collected packages: typing-extensions, sniffio, prometheus-client, idna, h11, click, certifi, annotated-types, uvicorn, typing-inspection, pydantic-core, httpcore, anyio, starlette, pydantic, httpx, fastapi
+Successfully installed annotated-types-0.7.0 anyio-4.11.0 certifi-2025.10.5 click-8.3.0 fastapi-0.112.2 h11-0.16.0 httpcore-1.0.9 httpx-0.27.2 idna-3.10 prometheus-client-0.23.1 pydantic-2.11.10 pydantic-core-2.33.2 sniffio-1.3.1 starlette-0.38.6 typing-extensions-4.15.0 typing-inspection-0.4.2 uvicorn-0.30.6

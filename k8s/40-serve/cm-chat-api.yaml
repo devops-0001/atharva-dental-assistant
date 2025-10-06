@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chat-api-config
+  namespace: atharva-app
+data:
+  RETRIEVER_URL: "http://atharva-retriever.atharva-ml.svc.cluster.local:8001"
+  VLLM_URL: "http://atharva-vllm.atharva-ml.svc.cluster.local:8000"
+  MODEL_NAME: "smollm2-135m-atharva"

@@ -1,0 +1,78 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: atharva-train-lora
+  namespace: atharva-ml
+spec:
+  ttlSecondsAfterFinished: 7200   # auto-clean up pod 2h after completion
+  template:
+    spec:
+      nodeName: llmops-kind-worker
+      restartPolicy: Never
+      containers:
+      - name: train
+        image: schoolofdevops/lora-build-python:3.11-slim
+        imagePullPolicy: IfNotPresent
+        command: ["bash","-lc"]
+        args:
+          - |
+            python /mnt/project/atharva-dental-assistant/training/train_lora.py
+        env:
+        - name: BASE_MODEL
+          value: "HuggingFaceTB/SmolLM2-135M-Instruct"
+        - name: MAX_SEQ_LEN
+          value: "256"
+        - name: LORA_R
+          value: "4"
+        - name: LORA_ALPHA
+          value: "8"
+        - name: LORA_DROPOUT
+          value: "0.05"
+        - name: LR
+          value: "2e-4"
+        - name: WARMUP_RATIO
+          value: "0.02"
+        - name: BATCH_SIZE
+          value: "1"
+        - name: GRAD_ACCUM
+          value: "1"
+        - name: MAX_STEPS
+          value: "80"
+        - name: DEMO_MAX_TRAIN_SAMPLES
+          value: "0"
+        - name: DEMO_MAX_VAL_SAMPLES
+          value: "0"
+        - name: HF_HOME
+          value: "/cache/hf"              # model/dataset cache across runs
+        - name: HF_HUB_DISABLE_TELEMETRY
+          value: "1"
+        - name: TOKENIZERS_PARALLELISM
+          value: "true"
+        # Thread caps to avoid oversubscription; align to CPU limits below
+        - name: OMP_NUM_THREADS
+          value: "4"
+        - name: MKL_NUM_THREADS
+          value: "4"
+        - name: NUMEXPR_MAX_THREADS
+          value: "4"
+        resources:
+          requests:
+            cpu: "2"
+            memory: "4Gi"
+            ephemeral-storage: "5Gi"
+          limits:
+            cpu: "4"
+            memory: "6Gi"
+            ephemeral-storage: "20Gi"
+        volumeMounts:
+        - name: host
+          mountPath: /mnt/project
+      volumes:
+      - name: host
+        hostPath:
+          path: /mnt/project
+          type: Directory
+      - name: hf-cache
+        hostPath:
+          path: /mnt/hf-cache               # create once on the node
+          type: DirectoryOrCreate

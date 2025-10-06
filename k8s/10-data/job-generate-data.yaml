@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: atharva-generate-data
+  namespace: atharva-ml
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: synth
+        image: python:3.11-slim
+        command: ["bash","-lc"]
+        args:
+          - |
+            pip install --no-cache-dir sentence-transformers==2.7.0
+            python /mnt/project/atharva-dental-assistant/tools/synth_data.py \
+              --clinic Pune --currency INR \
+              --treatments /mnt/project/atharva-dental-assistant/datasets/clinic/treatments.json \
+              --policies /mnt/project/atharva-dental-assistant/datasets/clinic/policies/*.md \
+              --faq /mnt/project/atharva-dental-assistant/datasets/clinic/faq.md \
+              --recent /mnt/project/atharva-dental-assistant/datasets/clinic/recent_queries.jsonl \
+              --out /mnt/project/atharva-dental-assistant/datasets/training
+        volumeMounts:
+        - name: host
+          mountPath: /mnt/project
+      volumes:
+      - name: host
+        hostPath: { path: /mnt/project, type: Directory }

@@ -1,0 +1,41 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hpa-chat-api
+  namespace: atharva-app
+spec:
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: ContainerResource
+      containerResource:
+        name: cpu
+        container: api  # change this as per actual container name
+        target:
+          type: Utilization
+          averageUtilization: 50
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment 
+    name: atharva-chat-api
+  behavior:
+    scaleDown:
+      policies:
+      - type: Pods
+        value: 2
+        periodSeconds: 120
+      - type: Percent
+        value: 25
+        periodSeconds: 120
+      stabilizationWindowSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 45
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 2
+        periodSeconds: 15
+      selectPolicy: Max
+

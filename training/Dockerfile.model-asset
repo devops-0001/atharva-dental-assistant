@@ -1,0 +1,7 @@
+# Minimal base; just hosts files at /model
+FROM alpine:3.20
+RUN adduser -D -H -s /sbin/nologin model && mkdir -p /model && chown -R model /model
+# Copy the merged Transformers folder produced by Lab 2
+# (Contains config.json, .safetensors, tokenizer files, etc.)
+COPY artifacts/train/REPLACE_RUN_ID/merged-model/ /model/
+USER model

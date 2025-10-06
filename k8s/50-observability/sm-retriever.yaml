@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: sm-atharva-retriever
+  namespace: monitoring
+  labels:
+    release: kps   # optional; include if your Prometheus uses this selector
+spec:
+  namespaceSelector:
+    matchNames:
+      - atharva-ml
+  selector:
+    matchLabels:
+      app: retriever         # <-- must match your Service’s label
+  endpoints:
+    - port: http    # <-- must match the port *name* in Service
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s             # optional, safe default

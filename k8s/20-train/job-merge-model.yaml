@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: atharva-merge-model
+  namespace: atharva-ml
+spec:
+  template:
+    spec:
+      nodeName: llmops-kind-worker
+      restartPolicy: Never
+      containers:
+      - name: merge
+        image: schoolofdevops/lora-build-python:3.11-slim
+        command: ["bash","-lc"]
+        args:
+          - |
+            python /mnt/project/atharva-dental-assistant/training/merge_lora.py
+        env:
+        - name: BASE_MODEL
+          value: "HuggingFaceTB/SmolLM2-135M-Instruct"
+        - name: RUN_ID
+          value: "REPLACE_WITH_RUN_ID"
+        volumeMounts:
+        - name: host
+          mountPath: /mnt/project
+      volumes:
+      - name: host
+        hostPath: { path: /mnt/project, type: Directory }

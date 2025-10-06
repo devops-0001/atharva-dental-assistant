@@ -1,0 +1,163 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: atharva-build-index
+  namespace: atharva-ml
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: index
+        image: public.ecr.aws/docker/library/python:3.11-slim
+        command: ["bash","-lc"]
+        args:
+          - |
+            set -euo pipefail
+            export HOME=/mnt/project
+            VENV=/mnt/project/.venv-build
+            ROOT=/mnt/project/atharva-dental-assistant/datasets/clinic
+            OUT=/mnt/project/atharva-dental-assistant/artifacts/rag
+            mkdir -p "$OUT"
+            python -m venv "$VENV"
+            . "$VENV/bin/activate"
+            python -m pip install -U pip
+            python -m pip install --no-cache-dir "numpy==1.26.4" "scipy==1.10.1" "scikit-learn==1.3.2" "joblib==1.3.2"
+
+            python - << 'PY'
+            from pathlib import Path
+            import json, re
+            from typing import Any, Dict, List, Tuple
+            import numpy as np
+            from sklearn.feature_extraction.text import TfidfVectorizer
+            from scipy import sparse
+            import joblib
+
+            ROOT   = Path("/mnt/project/atharva-dental-assistant/datasets/clinic")
+            OUTDIR = Path("/mnt/project/atharva-dental-assistant/artifacts/rag")
+            OUTDIR.mkdir(parents=True, exist_ok=True)
+
+            # ---- helpers to render concise snippets ----
+            def render_markdown_snippet(txt: str, max_lines: int = 8) -> str:
+                lines = [ln.strip() for ln in txt.splitlines()]
+                lines = [ln for ln in lines if ln]
+                return "\n".join(lines[:max_lines])
+
+            def render_treatment_item(it: Dict[str, Any]) -> str:
+                keys = ("code","name","category","duration_minutes","visits","price_band_inr",
+                        "indications","steps","aftercare","risks")
+                parts = []
+                for k in keys:
+                    if k in it:
+                        v = it[k]
+                        if isinstance(v, (list, tuple)):
+                            v = ", ".join(map(str, v))
+                        parts.append(f"{k}: {v}")
+                return "\n".join(parts)
+
+            def render_recent_qa(obj: Dict[str, Any]) -> str:
+                q = str(obj.get("q","")).strip()
+                a = str(obj.get("a","")).strip()
+                return f"Q: {q}\nA: {a}"
+
+            texts: List[str] = []
+            meta:  List[Dict[str, Any]] = []
+
+            # policies/*.md
+            for p in sorted((ROOT/"policies").glob("*.md")):
+                t = p.read_text(encoding="utf-8", errors="ignore")
+                snip = render_markdown_snippet(t, max_lines=8)
+                snip = snip.strip()[:1500]
+                doc_id = f"policies/{p.name}"
+                texts.append(snip)
+                meta.append({
+                    "doc_id": doc_id,
+                    "section": "full",
+                    "path": doc_id,
+                    "type": "md",
+                    "text": snip,
+                })
+
+            # faq.md
+            faq = ROOT/"faq.md"
+            if faq.exists():
+                t = faq.read_text(encoding="utf-8", errors="ignore")
+                snip = render_markdown_snippet(t, max_lines=10).strip()[:1500]
+                texts.append(snip)
+                meta.append({
+                    "doc_id": "faq.md",
+                    "section": "full",
+                    "path": "faq.md",
+                    "type": "md",
+                    "text": snip,
+                })
+
+            # treatments.json (semantic section id = code)
+            tr = ROOT/"treatments.json"
+            if tr.exists():
+                items = json.loads(tr.read_text(encoding="utf-8"))
+                if isinstance(items, list):
+                    for it in items:
+                        code = it.get("code") or "item"
+                        snip = render_treatment_item(it).strip()[:1500]
+                        texts.append(snip)
+                        meta.append({
+                            "doc_id": "treatments.json",
+                            "section": str(code),
+                            "path": f"treatments.json#{code}",
+                            "type": "json",
+                            "text": snip,
+                        })
+
+            # recent_queries.jsonl (optional, weak source)
+            rq = ROOT/"recent_queries.jsonl"
+            if rq.exists():
+                for line in rq.read_text(encoding="utf-8", errors="ignore").splitlines():
+                    line=line.strip()
+                    if not line: continue
+                    try:
+                        obj = json.loads(line)
+                    except Exception:
+                        continue
+                    ts = str(obj.get("ts","na"))
+                    snip = render_recent_qa(obj).strip()[:1500]
+                    texts.append(snip)
+                    meta.append({
+                        "doc_id": "recent_queries.jsonl",
+                        "section": ts,
+                        "path": f"recent_queries.jsonl:{ts}",
+                        "type": "jsonl",
+                        "text": snip,
+                    })
+
+            if not texts:
+                raise SystemExit(f"No ingestible files in {ROOT}")
+
+            # Build sparse TF-IDF
+            vec = TfidfVectorizer(
+                lowercase=True,
+                ngram_range=(1,2),
+                max_df=0.9,
+                min_df=1,
+                norm="l2",
+            )
+            X = vec.fit_transform(texts).astype(np.float32)
+
+            # Save artifacts
+            joblib.dump(vec, OUTDIR/"tfidf_vectorizer.joblib")
+            sparse.save_npz(OUTDIR/"tfidf_matrix.npz", X)
+            (OUTDIR/"meta.json").write_text(
+                json.dumps(meta, ensure_ascii=False, indent=2),
+                encoding="utf-8"
+            )
+
+            print("TF-IDF built:", X.shape, "saved to", OUTDIR)
+            PY
+
+            ls -lah "$OUT" && wc -c "$OUT"/tfidf_* "$OUT"/meta.json
+        volumeMounts:
+        - name: host
+          mountPath: /mnt/project
+      volumes:
+      - name: host
+        hostPath: { path: /mnt/project, type: Directory }

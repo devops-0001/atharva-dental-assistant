@@ -1,0 +1,74 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: atharva-vllm
+  namespace: atharva-ml
+  annotations:
+    autoscaling.knative.dev/metric: "concurrency"
+    autoscaling.knative.dev/target: "1"
+spec:
+  predictor:
+    minReplicas: 1
+    maxReplicas: 1
+    containerConcurrency: 1
+    containers:
+      - name: vllm
+        image: schoolofdevops/vllm-cpu-nonuma:0.9.1
+        args:
+          - --model=/models/model
+          - --host=0.0.0.0
+          - --port=8000               # KServe/Knative-friendly
+          - --max-model-len=2048
+          - --served-model-name=smollm2-135m-atharva
+          - --dtype=float16           # keeps RAM lower on CPU for this tiny model
+          - --disable-frontend-multiprocessing
+          - --max-num-seqs=1          # clamp engine concurrency (OOM guard)
+          - --swap-space=0.5          # GiB reserved for CPU KV cache (fits small pod)
+        env:
+          - name: VLLM_TARGET_DEVICE
+            value: "cpu"
+          - name: VLLM_CPU_KVCACHE_SPACE
+            value: "1"
+          - name: OMP_NUM_THREADS
+            value: "2"
+          - name: OPENBLAS_NUM_THREADS
+            value: "1"
+          - name: MKL_NUM_THREADS
+            value: "1"
+          - name: VLLM_CPU_OMP_THREADS_BIND
+            value: "0-1"              # avoid NUMA auto-binding path
+        ports:
+          - name: http1
+            containerPort: 8000
+        resources:
+          requests:
+            cpu: "2"
+            memory: "2Gi"
+          limits:
+            cpu: "2"
+            memory: "3Gi"             # bump to 4Gi if you still see OOM
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        volumeMounts:
+          - name: model
+            mountPath: /models
+            readOnly: true
+    # Pinning to a node is fine; nodeSelector is usually nicer than nodeName:
+    # nodeSelector:
+    #   kubernetes.io/hostname: llmops-kind-worker
+    nodeName: llmops-kind-worker
+    volumes:
+      - name: model
+        image:
+          reference: initcron/smollm2-135m-merged:v3
+          pullPolicy: IfNotPresent
