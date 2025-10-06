@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: atharva
+  namespace: argocd
+spec:
+  description: Atharva Dental Clinic - LLMOps Bootcamp
+  sourceRepos:
+    - https://github.com/devops-0001/atharva-dental-assistant.git
+  destinations:
+    - namespace: atharva-ml
+      server: https://kubernetes.default.svc
+    - namespace: atharva-app
+      server: https://kubernetes.default.svc
+    - namespace: monitoring
+      server: https://kubernetes.default.svc
+    - namespace: keda
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'

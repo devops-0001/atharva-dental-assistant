@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: atharva-serve
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: atharva
+  source:
+    repoURL: https://github.com/devops-0001/atharva-dental-assistant.git
+    targetRevision: main
+    path: k8s/40-serve
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: atharva-ml
+  syncPolicy:
+    automated: { prune: true, selfHeal: true }
+  ignoreDifferences:
+    - group: serving.kserve.io
+      kind: RawDeployment
+      jsonPointers:
+        - /spec/deployments/0/replicas    # controller may reconcile
+  syncOptions:
+    - Validate=true
+    - PrunePropagationPolicy=background
+  revisionHistoryLimit: 5

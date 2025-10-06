@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: atharva-train
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: atharva
+  source:
+    repoURL: https://github.com/devops-0001/atharva-dental-assistant.git
+    targetRevision: main
+    path: k8s/20-train
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: atharva-ml
+  syncPolicy:
+    automated: { prune: true, selfHeal: true }
+

@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: atharva-root
+  namespace: argocd
+spec:
+  project: atharva
+  source:
+    repoURL: https://github.com/devops-0001/atharva-dental-assistant.git
+    targetRevision: main
+    path: k8s/70-gitops/apps
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
